@@ -11,10 +11,18 @@
             height: 100%;
             margin: 0;
         }
+        #overlap {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
     </style>
 
     <script>
         var tag = document.createElement('script');
+        var elementFs;
 
         tag.src = "https://www.youtube.com/iframe_api";
         var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -35,15 +43,68 @@
                     cc_load_policy: 0,
                     iv_load_policy: 3,
                     autohide: 1,
+                    disablekb: 1,
                     rel: 0
+                },
+                events: {
+                    'onReady': onPlayerReady
                 }
             });
+        }
+        var requestFullscreen = function (el) {
+            if (el.requestFullscreen) {
+                el.requestFullscreen();
+            } else if (el.webkitRequestFullscreen) {
+                el.webkitRequestFullscreen();
+            } else if (el.mozRequestFullScreen) {
+                el.mozRequestFullScreen();
+            } else if (el.msRequestFullscreen) {
+                el.msRequestFullscreen();
+            }
+        };
+
+        var exitFullscreen = function () {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        };
+
+        var isFullscreen = function () {
+            var el;
+            if (document.fullscreenElement) {
+                el = document.fullscreenElement;
+            } else if (document.webkitFullscreenElement) {
+                el = document.webkitFullscreenElement;
+            } else if (document.mozFullScreenElement) {
+                el = document.mozFullScreenElement;
+            } else if (document.msFullscreenElement) {
+                el = document.msFullscreenElement;
+            }
+
+            return el;
+        };
+
+        function onPlayerReady() {
+            elementFs = document.querySelector('body');
+            requestFullscreen(elementFs);
+            document.querySelector('#overlap').addEventListener('click', clickPlayer);
+        }
+
+        function clickPlayer() {
+            isFullscreen() ? exitFullscreen() : requestFullscreen(elementFs);
         }
     </script>
 </head>
 <body>
 
     <div id="ytplayer"></div>
+    <div id="overlap"></div>
 
 </body>
 </html>
